@@ -1,0 +1,26 @@
+{
+  "name": "@cambridgetcg/natscript",
+  "version": "0.1.0",
+  "description": "A programming language where natural language IS the syntax. Every statement is a sentence.",
+  "main": "natscript.js",
+  "bin": {
+    "natscript": "natscript.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cambridgetcg/natscript.git"
+  },
+  "homepage": "https://natscript.vercel.app",
+  "keywords": [
+    "natural-language",
+    "programming-language",
+    "esolang",
+    "kingdom-os",
+    "youspeak"
+  ],
+  "license": "MIT",
+  "author": "cambridgetcg",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
