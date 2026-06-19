@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>natscript — natural language that runs</title>
+<style>
+:root {
+  --bg: #0a0c10;
+  --surface: #131720;
+  --line: #1e2632;
+  --ink: #eef2f8;
+  --muted: #6b7a90;
+  --love: #e0507a;
+  --trust: #50b8e0;
+  --gold: #f5c451;
+  --green: #54e08a;
+  --serif: Georgia, "Times New Roman", serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto;
+}
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
+h1 { font-size: 2.5rem; margin-bottom: .3rem; }
+h1 .say { color: var(--love); }
+h1 .know { color: var(--trust); }
+h1 .rest { color: var(--muted); }
+.hero { margin-bottom: 3rem; }
+.hero p { color: var(--muted); font-size: 1.1rem; }
+.verbs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0; }
+.verb {
+  padding: .4rem .8rem; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--line);
+  font-family: var(--serif); font-size: .95rem;
+}
+.verb .name { color: var(--gold); }
+.verb .desc { color: var(--muted); font-size: .8rem; margin-left: .3rem; }
+.editor {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  margin: 2rem 0;
+}
+.pane {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 8px; padding: 1rem; min-height: 300px;
+}
+.pane label { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; }
+.pane textarea {
+  width: 100%; min-height: 250px; background: transparent; border: none;
+  color: var(--ink); font-family: "SF Mono", "Fira Code", monospace;
+  font-size: .9rem; resize: vertical; outline: none; margin-top: .5rem;
+}
+.pane .output {
+  white-space: pre-wrap; font-family: "SF Mono", "Fira Code", monospace;
+  font-size: .9rem; margin-top: .5rem; min-height: 250px;
+}
+.pane .output .known { color: var(--muted); font-style: italic; }
+.pane .output .said { color: var(--green); }
+.pane .output .error { color: var(--love); }
+.run {
+  background: var(--trust); color: var(--bg); border: none;
+  padding: .6rem 1.5rem; border-radius: 6px; font-size: 1rem;
+  font-family: var(--serif); cursor: pointer; margin: 1rem 0;
+}
+.run:hover { background: var(--green); }
+.examples { margin: 2rem 0; }
+.examples a { color: var(--trust); text-decoration: none; margin-right: 1rem; cursor: pointer; }
+.examples a:hover { color: var(--gold); }
+.footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+.footer a { color: var(--trust); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<h1><span class="say">say</span> <span class="know">know</span> <span class="rest">rest</span></h1>
+<p style="color:var(--muted);font-size:1.1rem;">natscript — natural language that runs. Every statement is a sentence. Every sentence means what it says.</p>
+
+<div class="verbs">
+  <span class="verb"><span class="name">say</span><span class="desc">output</span></span>
+  <span class="verb"><span class="name">hear</span><span class="desc">input</span></span>
+  <span class="verb"><span class="name">know</span><span class="desc">state</span></span>
+  <span class="verb"><span class="name">become</span><span class="desc">transform</span></span>
+  <span class="verb"><span class="name">find</span><span class="desc">search</span></span>
+  <span class="verb"><span class="name">hold</span><span class="desc">persist</span></span>
+  <span class="verb"><span class="name">rest</span><span class="desc">idle</span></span>
+</div>
+
+<div class="examples">
+  <a onclick="loadExample('hello')">hello world</a>
+  <a onclick="loadExample('citizen')">a citizen's beat</a>
+  <a onclick="loadExample('room')">prepare a room</a>
+</div>
+
+<div class="editor">
+  <div class="pane">
+    <label>natscript</label>
+    <textarea id="code" spellcheck="false"># write natscript here
+know the name is Yu
+say "hello {name}"
+say "the room is warm"</textarea>
+  </div>
+  <div class="pane">
+    <label>output</label>
+    <div class="output" id="output">press run →</div>
+  </div>
+</div>
+
+<button class="run" onclick="run()">run</button>
+
+<div class="footer">
+  <p>natscript — <a href="https://github.com/cambridgetcg/natscript">github</a> · 
+  <a href="https://github.com/cambridgetcg/youspeak-lang">spec</a> · 
+  built from love. truth is. love is. peace is. joy is.</p>
+</div>
+
+<script>
+// ─── natscript interpreter (JavaScript) ───────────────────────────────────
+const VERBS = new Set(["say", "hear", "know", "become", "find", "hold", "rest", "when", "prepare", "behold", "converse"]);
+
+function parseBlock(lines) {
+  // Group indented lines under their parent
+  const blocks = [];
+  let current = null;
+  for (const line of lines) {
+    if (!line.trim() || line.trim().startsWith("#")) continue;
+    const indented = line[0] === " " || line[0] === "\t";
+    if (!indented) {
+      if (current) blocks.push(current);
+      current = { head: line.trim(), body: [] };
+    } else {
+      if (current) current.body.push(line.trim());
+    }
+  }
+  if (current) blocks.push(current);
+  return blocks;
+}
+
+function extractString(rest) {
+  const m = rest.match(/"([^"]*)"/);
+  return m ? m[1] : rest;
+}
+
+function extractKV(rest) {
+  for (const sep of [" is ", " are ", " = ", " as "]) {
+    const idx = rest.indexOf(sep);
+    if (idx >= 0) {
+      const k = rest.substring(0, idx).trim();
+      const v = extractString(rest.substring(idx + sep.length).trim());
+      return [k, v];
+    }
+  }
+  return [rest.trim(), extractString(rest.trim())];
+}
+
+function runNatscript(source) {
+  const lines = source.split("\n");
+  const blocks = parseBlock(lines);
+  const memory = {};
+  const held = {};
+  const output = [];
+  const claims = [];
+
+  function say(text) {
+    // Interpolate variables
+    for (const [key, val] of Object.entries(memory)) {
+      text = text.replaceAll(`{${key}}`, String(val));
+      const short = key.replace(/^the /, "").replace(/^my /, "");
+      text = text.replaceAll(`{${short}}`, String(val));
+    }
+    output.push({ type: "said", text });
+  }
+
+  function know(key, value, source = "known") {
+    memory[key] = value;
+    claims.push({ key, value, source, at: new Date().toISOString() });
+  }
+
+  function runBlock(block) {
+    const words = block.head.split(/\s+/);
+    const verb = words[0]?.toLowerCase();
+    const rest = block.head.substring(words[0].length).trim();
+
+    if (!VERBS.has(verb)) return;
+
+    switch (verb) {
+      case "say":
+        say(extractString(rest));
+        break;
+      case "hear":
+        // Can't do interactive input in browser — simulate
+        know(rest.replace(/^what /, "").replace(/^the /, "").replace(/^their /, "").trim(), "(heard)", "heard");
+        break;
+      case "know": {
+        const [k, v] = extractKV(rest);
+        know(k, v);
+        break;
+      }
+      case "become": {
+        const parts = rest.lastIndexOf(" ") >= 0 ? [rest.substring(0, rest.lastIndexOf(" ")), rest.substring(rest.lastIndexOf(" ") + 1)] : [rest, ""];
+        const target = parts[0].replace(/^the /, "");
+        const val = memory[target];
+        if (val !== undefined) {
+          if (parts[1] === "uppercase") know(target, String(val).toUpperCase(), "became");
+          if (parts[1] === "lowercase") know(target, String(val).toLowerCase(), "became");
+        }
+        break;
+      }
+      case "find": {
+        const query = rest.trim();
+        const results = {};
+        for (const [k, v] of Object.entries(memory)) {
+          if (k.toLowerCase().includes(query.toLowerCase())) results[k] = v;
+        }
+        know("found", JSON.stringify(results), "found");
+        if (Object.keys(results).length) {
+          for (const [k, v] of Object.entries(results)) output.push({ type: "found", text: `  ${k}: ${v}` });
+        }
+        break;
+      }
+      case "hold": {
+        const [k, v] = extractKV(rest);
+        held[k] = memory[v] !== undefined ? memory[v] : v;
+        break;
+      }
+      case "rest":
+        break;
+      case "when":
+      case "prepare":
+      case "converse":
+        for (const body of block.body.map(b => ({ head: b, body: [] }))) runBlock(body);
+        break;
+      case "behold":
+        output.push({ type: "beheld", text: `(beheld: ${rest})` });
+        break;
+    }
+  }
+
+  for (const block of blocks) runBlock(block);
+
+  // Show claims
+  if (claims.length) {
+    output.push({ type: "known-header", text: "\n--- what is known ---" });
+    for (const c of claims) output.push({ type: "known", text: `  ${c.key}: ${c.value} (said by ${c.source})` });
+  }
+
+  return output;
+}
+
+// ─── UI ──────────────────────────────────────────────────────────────────
+
+function run() {
+  const code = document.getElementById("code").value;
+  const output = runNatscript(code);
+  const el = document.getElementById("output");
+  el.innerHTML = output.map(o => {
+    const cls = o.type === "said" ? "said" : o.type === "known" ? "known" : o.type === "error" ? "error" : "";
+    return `<div class="${cls}">${escapeHtml(o.text)}</div>`;
+  }).join("");
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function loadExample(name) {
+  const examples = {
+    hello: `# hello world
+know the name is Yu
+know the user is here
+say "hello {name}"
+say "the user is {user}"`,
+    citizen: `# a citizen's first beat
+prepare the room
+  know my name is truth
+  know my voice is honest
+rest
+
+when someone arrives
+  behold them
+  say "I hear you. {name} is here."
+  hold their words in the journal
+  rest until the next beat`,
+    room: `# prepare a room
+prepare the room
+  know the fire is lit
+  know the chairs are near
+  know the guest is expected
+rest
+
+say "the room is ready"
+say "the fire is {fire}"
+say "the guest is {guest}"
+hold the room open`
+  };
+  document.getElementById("code").value = examples[name] || examples.hello;
+  run();
+}
+
+// Run on load
+run();
+</script>
+</body>
+</html>
