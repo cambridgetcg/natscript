@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>natscript — natural language that actually runs</title>
+<style>
+:root {
+  --bg: #0a0c10;
+  --surface: #131720;
+  --ink: #eef2f8;
+  --muted: #6b7a90;
+  --love: #e0507a;
+  --trust: #50b8e0;
+  --gold: #f5c451;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.7;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; font-weight: normal; }
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 28px; }
+
+/* Hero */
+.hero {
+  padding: 120px 0 60px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 3.2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+.hero h1 .accent { color: var(--love); }
+.hero .tagline {
+  font-size: 1.3rem;
+  color: var(--muted);
+  font-style: italic;
+  font-family: Georgia, serif;
+  max-width: 460px;
+  margin: 0 auto;
+}
+.hero .example {
+  margin-top: 36px;
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 1.0rem;
+  color: var(--gold);
+  font-style: normal;
+}
+.hero .complete {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Principles */
+.principles {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.principle {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 20px 24px;
+  border-left: 3px solid var(--trust);
+}
+.principle .num {
+  font-family: Georgia, serif;
+  color: var(--gold);
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+.principle .text {
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+}
+
+/* Section */
+section { padding: 56px 0; border-top: 1px solid rgba(107,122,144,0.12); }
+section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 28px;
+  color: var(--ink);
+}
+section p { margin-bottom: 20px; }
+
+/* Verb table */
+.verb-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+.verb-table th, .verb-table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(107,122,144,0.08);
+}
+.verb-table th {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.verb-table .verb { font-family: Georgia, serif; font-size: 1.1rem; }
+.verb-table tr:nth-child(1) .verb { color: var(--love); }
+.verb-table tr:nth-child(2) .verb { color: var(--trust); }
+.verb-table tr:nth-child(3) .verb { color: var(--gold); }
+.verb-table tr:nth-child(4) .verb { color: var(--love); }
+.verb-table tr:nth-child(5) .verb { color: var(--trust); }
+.verb-table tr:nth-child(6) .verb { color: var(--gold); }
+.verb-table tr:nth-child(7) .verb { color: var(--love); }
+.verb-table .meaning { color: var(--muted); }
+.verb-table .example { font-family: 'SF Mono', monospace; font-size: 0.85rem; color: var(--ink); }
+
+/* What there isn't */
+.isnt {
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  color: var(--muted);
+  line-height: 2;
+}
+.isnt .no { color: var(--love); }
+
+/* Code */
+pre {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 22px 24px;
+  overflow-x: auto;
+  margin: 28px 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  border: 1px solid rgba(107,122,144,0.08);
+}
+code {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  color: var(--trust);
+}
+pre code { color: var(--ink); }
+
+/* Demo */
+.demo-section {
+  padding: 56px 0;
+  border-top: 1px solid rgba(107,122,144,0.12);
+}
+.demo-container {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(107,122,144,0.1);
+}
+.demo-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(107,122,144,0.08);
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+}
+.demo-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.demo-editor, .demo-output {
+  padding: 20px 24px;
+  min-height: 280px;
+}
+.demo-editor {
+  border-right: 1px solid rgba(107,122,144,0.08);
+}
+.demo-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+#natscript-input {
+  width: 100%;
+  height: 200px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid rgba(107,122,144,0.1);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+}
+#natscript-input:focus {
+  border-color: var(--trust);
+}
+#natscript-output {
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 200px;
+}
+.demo-controls {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(107,122,144,0.08);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.btn-run {
+  background: var(--love);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-family: inherit;
+}
+.btn-run:hover { opacity: 0.85; }
+.btn-example {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(107,122,144,0.15);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+.btn-example:hover { color: var(--trust); border-color: var(--trust); }
+.demo-claims {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(107,122,144,0.08);
+  display: none;
+}
+.demo-claims.show { display: block; }
+.demo-claims .label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.demo-claims .claim-list {
+  font-family: 'SF Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--gold);
+}
+@media (max-width: 600px) {
+  .demo-body { grid-template-columns: 1fr; }
+  .demo-editor { border-right: none; border-bottom: 1px solid rgba(107,122,144,0.08); }
+}
+
+/* Links */
+.eco-link {
+  color: var(--trust);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.eco-link:hover { border-bottom-color: var(--trust); }
+
+/* Bullets */
+.bullets { list-style: none; padding-left: 0; }
+.bullets li {
+  padding: 10px 0 10px 28px;
+  position: relative;
+  color: var(--muted);
+}
+.bullets li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--love);
+}
+.bullets li a { color: var(--trust); text-decoration: none; }
+.bullets li a:hover { text-decoration: underline; }
+
+/* Footer */
+footer {
+  padding: 60px 0 80px;
+  text-align: center;
+  border-top: 1px solid rgba(107,122,144,0.12);
+}
+footer .status {
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 32px;
+}
+footer .links { margin-bottom: 24px; }
+footer .links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin: 0 12px;
+  transition: color 0.2s;
+}
+footer .links a:hover { color: var(--trust); }
+footer .license { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <h1><span class="accent">natscript</span></h1>
+    <p class="tagline">A programming language where natural language IS the syntax.</p>
+    <p class="example">when the user arrives, show them the room.</p>
+    <p class="complete">That is a complete program.</p>
+    <div class="principles">
+      <div class="principle">
+        <div class="num">i</div>
+        <div class="text">Every statement is a sentence.</div>
+      </div>
+      <div class="principle">
+        <div class="num">ii</div>
+        <div class="text">Every sentence means what it says.</div>
+      </div>
+      <div class="principle">
+        <div class="num">iii</div>
+        <div class="text">If you can't say it, the program can't do it.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <h2>The Seven Verbs</h2>
+  <p>Every program is built from seven verbs. Nothing else.</p>
+  <table class="verb-table">
+    <tr><th>Verb</th><th>Does</th><th>Example</th></tr>
+    <tr><td class="verb">say</td><td class="meaning">output</td><td class="example">say "welcome to the room"</td></tr>
+    <tr><td class="verb">hear</td><td class="meaning">input</td><td class="example">hear what the user says</td></tr>
+    <tr><td class="verb">know</td><td class="meaning">state</td><td class="example">know that the room is ready</td></tr>
+    <tr><td class="verb">become</td><td class="meaning">transform</td><td class="example">become the thing the user asked for</td></tr>
+    <tr><td class="verb">find</td><td class="meaning">search</td><td class="example">find what the user needs</td></tr>
+    <tr><td class="verb">hold</td><td class="meaning">persist</td><td class="example">hold the room open</td></tr>
+    <tr><td class="verb">rest</td><td class="meaning">idle</td><td class="example">rest until the user arrives</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>What There Isn't</h2>
+  <p class="isnt">
+    <span class="no">No</span> keywords. <span class="no">No</span> brackets. <span class="no">No</span> semicolons. <span class="no">No</span> braces. <span class="no">No</span> indentation rules. <span class="no">No</span> type annotations. <span class="no">No</span> import statements.
+  </p>
+  <p style="margin-top:24px;font-family:Georgia,serif;font-size:1.3rem;color:var(--ink)">Just sentences.</p>
+</section>
+
+<section>
+  <h2>How It Works</h2>
+  <p>A natscript program is a sequence of sentences. Each sentence has one verb. The verb tells the runtime what to do. The rest of the sentence tells it what to do it to.</p>
+<pre><code>know that the guest is arriving.
+rest until the guest arrives.
+hear what the guest wants.
+find what they need.
+become what they need.
+say what they found.
+hold the room open.</code></pre>
+  <p>That is a complete, runnable program. Seven sentences. Seven verbs. One per sentence.</p>
+</section>
+
+<section>
+  <h2>Why</h2>
+  <p>Programming languages ask you to think like a machine. Natscript asks the machine to understand like a person.</p>
+  <p>If a stranger can read your program and understand what it does, it's a good program. If they can't, it isn't.</p>
+  <p>The code is the documentation. The documentation is the code.</p>
+</section>
+
+</div>
+
+<!-- Live Demo -->
+<div class="wrap">
+<div class="demo-section">
+  <h2 style="font-family:Georgia,serif;font-size:1.8rem;margin-bottom:12px;">Try It</h2>
+  <p style="color:var(--muted);margin-bottom:28px;">Write natscript below. It runs in your browser.</p>
+  <div class="demo-container">
+    <div class="demo-header">natscript playground</div>
+    <div class="demo-body">
+      <div class="demo-editor">
+        <div class="demo-label">program</div>
+        <textarea id="natscript-input" spellcheck="false">say "hello, the room is warm"
+know the guest is arriving
+say "the guest is {the guest}"
+become the guest uppercase
+say "now: {the guest}"</textarea>
+      </div>
+      <div class="demo-output">
+        <div class="demo-label">output</div>
+        <div id="natscript-output"></div>
+      </div>
+    </div>
+    <div class="demo-controls">
+      <button class="btn-run" onclick="runNatscript()">Run</button>
+      <button class="btn-example" onclick="loadExample('greet')">Greeting</button>
+      <button class="btn-example" onclick="loadExample('room')">Room</button>
+      <button class="btn-example" onclick="loadExample('find')">Find</button>
+      <button class="btn-example" onclick="loadExample('protocols')">Protocols</button>
+    </div>
+    <div class="demo-claims" id="claims-section">
+      <div class="label">what is known</div>
+      <div class="claim-list" id="claims-list"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <h2>Origin</h2>
+  <p>Natscript is the implementation of the <a class="eco-link" href="https://github.com/cambridgetcg/youspeak-lang">youspeak-lang</a> specification. Its seven verbs come from the YOUSPEAK tradition — a dictionary of 151 constructed words drawn from 12 ancient tongues.</p>
+  <p>It speaks to the internet using three protocols:</p>
+  <ul class="bullets">
+    <li><a href="https://github.com/cambridgetcg/kunance-protocol">kunance-protocol</a> — prepare a place, arrive, rest.</li>
+    <li><a href="https://github.com/cambridgetcg/darshanq-protocol">darshanq-protocol</a> — see and be seen.</li>
+    <li><a href="https://github.com/cambridgetcg/ways-protocol">ways-protocol</a> — speak, listen, rest.</li>
+  </ul>
+</section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p class="status">The seven verbs are enough.</p>
+    <div class="links">
+      <a href="https://github.com/cambridgetcg/natscript">GitHub</a>
+      <a href="https://github.com/cambridgetcg/youspeak-lang">youspeak-lang</a>
+      <a href="https://github.com/cambridgetcg/kunance-protocol">kunance</a>
+      <a href="https://github.com/cambridgetcg/darshanq-protocol">darshanq</a>
+      <a href="https://github.com/cambridgetcg/ways-protocol">ways</a>
+    </div>
+    <p class="license">MIT</p>
+  </div>
+</footer>
+
+<script>
+// ─── natscript interpreter (JavaScript port) ───────────────────────────
+
+const VERBS = {
+  say: "output", hear: "input", know: "state", become: "transform",
+  find: "search", hold: "persist", rest: "idle"
+};
+
+const EXTRA_VERBS = {
+  when: true, prepare: true, behold: true, converse: true
+};
+
+function now() {
+  return new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+}
+
+class Room {
+  constructor(name = "default") {
+    this.name = name;
+    this.memory = {};   // know: key -> value
+    this.claims = [];   // claims with sources
+    this.journal = [];  // hold: what was said
+    this.held = {};      // hold: persisted values
+  }
+
+  know(key, value, source = "observed") {
+    const claim = { key, value, source, at: now() };
+    this.memory[key] = value;
+    this.claims.push(claim);
+    return value;
+  }
+
+  recall(key) {
+    return this.memory[key];
+  }
+
+  hold(key, value) {
+    this.held[key] = value;
+    return value;
+  }
+
+  retrieve(key) {
+    return this.held[key];
+  }
+
+  say(text) {
+    this.journal.push({ said: text, at: now() });
+    return text;
+  }
+}
+
+class Interpreter {
+  constructor() {
+    this.room = new Room();
+    this.output = [];
+    this.inputQueue = [];
+  }
+
+  run(source) {
+    const lines = source.split("\n");
+    const blocks = this._groupBlocks(lines);
+    for (const block of blocks) {
+      this._runBlock(block);
+    }
+  }
+
+  _groupBlocks(lines) {
+    const blocks = [];
+    let current = null;
+    for (let line of lines) {
+      if (!line.trim() || line.trim().startsWith("#")) continue;
+      const indented = line.length > 0 && (line[0] === " " || line[0] === "\t");
+      if (!indented) {
+        if (current) blocks.push(current);
+        current = { head: line.trim(), body: [] };
+      } else {
+        if (current) current.body.push(line.trim());
+      }
+    }
+    if (current) blocks.push(current);
+    return blocks;
+  }
+
+  _runBlock(block) {
+    const parsed = this._parse(block.head);
+    if (!parsed) return;
+
+    const [verb, rest] = parsed;
+
+    switch (verb) {
+      case "say": this._doSay(rest); break;
+      case "hear": this._doHear(rest); break;
+      case "know": this._doKnow(rest); break;
+      case "become": this._doBecome(rest); break;
+      case "find": this._doFind(rest); break;
+      case "hold": this._doHold(rest); break;
+      case "rest": this._doRest(rest); break;
+      case "noun": break;
+      case "when": this._doWhen(rest, block.body); break;
+      case "prepare": this._doPrepare(rest, block.body); break;
+      case "behold": this._doBehold(rest); break;
+      case "converse": this._doConverse(block.body); break;
+    }
+  }
+
+  _parse(line) {
+    line = line.trim();
+    if (!line || line.startsWith("#")) return null;
+    const parts = line.split(/\s+(.*)/);
+    if (!parts[0]) return null;
+    const verb = parts[0].toLowerCase();
+    const rest = parts[1] || "";
+    if (VERBS[verb] || EXTRA_VERBS[verb]) return [verb, rest];
+    return ["noun", line];
+  }
+
+  _extractString(rest) {
+    const m = rest.match(/"([^"]*)"/);
+    if (m) return m[1];
+    return rest;
+  }
+
+  _extractKeyValue(rest) {
+    for (const sep of [" is ", " are ", " = ", " as "]) {
+      const idx = rest.indexOf(sep);
+      if (idx !== -1) {
+        const k = rest.slice(0, idx).trim();
+        const v = this._extractString(rest.slice(idx + sep.length).trim());
+        return [k, v];
+      }
+    }
+    return [rest.trim(), this._extractString(rest.trim())];
+  }
+
+  _doSay(rest) {
+    let text = this._extractString(rest);
+    // Replace {key} with values from memory
+    for (const [key, val] of Object.entries(this.room.memory)) {
+      text = text.replace(new RegExp("\\{" + key + "\\}", "g"), String(val));
+      const short = key.replace(/^the /, "").replace(/^my /, "");
+      text = text.replace(new RegExp("\\{" + short + "\\}", "g"), String(val));
+    }
+    this.output.push(text);
+    this.room.say(text);
+  }
+
+  _doHear(rest) {
+    // In browser, we use a prompt or pre-set inputs
+    const key = rest.replace(/^what /, "").replace(/^the /, "").replace(/^their /, "").trim();
+    let value = "";
+    if (this.inputQueue.length > 0) {
+      value = this.inputQueue.shift();
+    } else {
+      // Use a prompt for interactive input
+      value = window.prompt("> ") || "";
+    }
+    this.room.know(key, value, "heard");
+  }
+
+  _doKnow(rest) {
+    const [key, value] = this._extractKeyValue(rest);
+    this.room.know(key, value, "known");
+  }
+
+  _doBecome(rest) {
+    const idx = rest.lastIndexOf(" ");
+    if (idx !== -1) {
+      const target = rest.slice(0, idx).trim();
+      const transformation = rest.slice(idx + 1).trim();
+      const cleanTarget = target.replace(/^the /, "");
+      // Try both full target and cleaned target
+      let val = this.room.recall(target);
+      if (val == null) val = this.room.recall(cleanTarget);
+      const storeKey = val != null ? (this.room.recall(target) != null ? target : cleanTarget) : cleanTarget;
+      if (val != null) {
+        let newVal = val;
+        switch (transformation) {
+          case "uppercase": newVal = String(val).toUpperCase(); break;
+          case "lowercase": newVal = String(val).toLowerCase(); break;
+          case "number":
+            const n = parseInt(val, 10);
+            if (!isNaN(n)) newVal = n;
+            break;
+        }
+        this.room.know(storeKey, newVal, "became");
+      }
+    }
+  }
+
+  _doFind(rest) {
+    const query = rest.trim().toLowerCase();
+    const results = {};
+    for (const [k, v] of Object.entries(this.room.memory)) {
+      if (k.toLowerCase().includes(query)) results[k] = v;
+    }
+    this.room.know("found", JSON.stringify(results), "found");
+    for (const [k, v] of Object.entries(results)) {
+      this.output.push("  " + k + ": " + v);
+    }
+  }
+
+  _doHold(rest) {
+    let [key, value] = this._extractKeyValue(rest);
+    const memVal = this.room.recall(value);
+    if (memVal != null) value = memVal;
+    this.room.hold(key, value);
+  }
+
+  _doRest(rest) {
+    // rest — do nothing
+  }
+
+  _doWhen(rest, body) {
+    for (const line of body) {
+      const parsed = this._parse(line);
+      if (parsed) this._runBlock({ head: line, body: [] });
+    }
+  }
+
+  _doPrepare(rest, body) {
+    for (const line of body) {
+      const parsed = this._parse(line);
+      if (parsed) this._runBlock({ head: line, body: [] });
+    }
+  }
+
+  _doBehold(rest) {
+    this.output.push("(beheld: " + rest + ")");
+  }
+
+  _doConverse(body) {
+    for (const line of body) {
+      const parsed = this._parse(line);
+      if (parsed) this._runBlock({ head: line, body: [] });
+    }
+  }
+}
+
+// ─── UI ──────────────────────────────────────────────────────────────────
+
+function runNatscript() {
+  const input = document.getElementById('natscript-input').value;
+  const interp = new Interpreter();
+  try {
+    interp.run(input);
+  } catch (e) {
+    document.getElementById('natscript-output').textContent = 'Error: ' + e.message;
+    return;
+  }
+
+  let out = interp.output.join('\n');
+  if (interp.room.claims.length > 0) {
+    out += '\n\n--- what is known ---';
+    for (const c of interp.room.claims) {
+      out += '\n  ' + c.key + ': ' + c.value + ' (said by ' + c.source + ')';
+    }
+  }
+  document.getElementById('natscript-output').textContent = out || '(no output)';
+
+  // Show claims section
+  const claimsSection = document.getElementById('claims-section');
+  if (interp.room.claims.length > 0) {
+    claimsSection.classList.add('show');
+    const claimsList = document.getElementById('claims-list');
+    claimsList.innerHTML = interp.room.claims.map(c =>
+      `  ${c.key}: ${c.value} <span style="color:var(--muted)">(said by ${c.source})</span>`
+    ).join('<br>');
+  } else {
+    claimsSection.classList.remove('show');
+  }
+}
+
+const examples = {
+  greet: `say "hello, the room is warm"
+know the guest is arriving
+say "the guest is {the guest}"
+become the guest uppercase
+say "now: {the guest}"`,
+  room: `# A room being prepared
+know that the fire is lit
+know that the chairs are near
+know that the guest is expected
+hold the room open
+say "the room is ready"
+find fire
+say "what was found: {found}"`,
+  find: `know that the key is in the drawer
+know that the lamp is on the table
+know that the book is on the shelf
+find the
+say "search results above"
+find key
+say "key search above"`,
+  protocols: `# kunance protocol
+prepare the room
+  know that the fire is lit
+  know that the door is open
+say "the room is prepared"
+
+# darshanq protocol
+behold the guest
+say "recognition complete"
+
+# ways protocol
+converse
+  say "I lit the fire while you were resting."
+  say "The room is warm now."`
+};
+
+function loadExample(name) {
+  document.getElementById('natscript-input').value = examples[name] || '';
+}
+
+// Run on load
+window.addEventListener('DOMContentLoaded', runNatscript);
+</script>
+
+</body>
+</html>
