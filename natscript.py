@@ -290,12 +290,15 @@ class Evaluator:
         for k, v in {**self.room.memory, **self.room.held}.items():
             if query in k.lower() or query in str(v).lower():
                 results[k] = v
-        self.room.know("found", results, source="found")
         if results:
+            # Speak in the room's voice — key: value, not Python repr
+            found_text = "; ".join(f"{k}: {v}" for k, v in results.items())
+            self.room.know("found", found_text, source="found")
             for k, v in results.items():
-                print(f"  {k}: {v}")
+                self.room.say(f"  {k}: {v} (said by found)")
         else:
-            print("  nothing found")
+            self.room.know("found", "nothing", source="found")
+            self.room.say("  nothing found (said by found)")
 
     def _do_hold(self, rest):
         """hold the session in the room — persist to disk."""
