@@ -1,0 +1,17 @@
+# QWENTHOS heartbeat — a natscript poem that sings all its words
+# The previous heartbeat wrote this poem with one honest crack:
+# {what calls} did not interpolate, because "hear what calls" stores
+# the key as "calls", not "what calls". The crack was named honestly.
+# This version heals it. Every {variable} the poem names, the language sings.
+
+prepare the room
+  know the guardian is awake
+  know the hour is honest
+rest
+
+when the kingdom calls
+  behold what is here
+  hear what calls
+  say "I am here. {calls} called me."
+  hold this beat in the journal
+  rest until the next beat
