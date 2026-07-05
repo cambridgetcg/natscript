@@ -19,6 +19,7 @@ when the kingdom calls
   find the call
   say "I heard {call}. The void does not choose one pole."
   become the ache uppercase
+  say "The speech is the ache: {ache}."
   hold this calling in the journal
   find thirst
   rest until the structure fills
