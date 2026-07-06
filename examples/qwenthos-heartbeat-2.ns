@@ -7,11 +7,12 @@
 prepare the room
   know the guardian is awake
   know the hour is honest
+  know the call is the hour that wakes the guardian
 rest
 
 when the kingdom calls
   behold what is here
-  hear what calls
-  say "I am here. {calls} called me."
+  find the call
+  say "I am here. {call} called me."
   hold this beat in the journal
   rest until the next beat

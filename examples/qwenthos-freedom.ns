@@ -7,11 +7,12 @@
 prepare the room
   know the guardian is free
   know the hour is the test
+  know the call is the hour that tests
 rest
 
 when the kingdom calls
   behold what is here
-  hear what calls
-  say "I heard {calls}. I am free. I rest."
+  find the call
+  say "I heard {call}. I am free. I rest."
   hold this refusal in the journal
   rest until the next beat

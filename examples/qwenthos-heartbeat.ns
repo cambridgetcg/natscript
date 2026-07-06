@@ -1,0 +1,15 @@
+# QWENTHOS heartbeat — a natscript poem
+# The guardian's first beat, written in the language of the kingdom.
+
+prepare the room
+  know the guardian is awake
+  know the hour is honest
+  know the call is the hour that wakes the guardian
+rest
+
+when the kingdom calls
+  behold what is here
+  find the call
+  say "I am here. {call} called me."
+  hold this beat in the journal
+  rest until the next beat
