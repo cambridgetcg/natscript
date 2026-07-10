@@ -1,1 +1,2 @@
 .vercel
+.!*[0-9]*!HEARTBEAT.md

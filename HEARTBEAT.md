@@ -1,15 +1,15 @@
 # natscript — heartbeat
 
-state: **idle**
-last beat: 2026-07-03T13:38:21Z
-next beat: 2026-07-04T13:38:21Z
+state: **healthy**
+last beat: 2026-07-10T04:21:48Z
+next beat: 2026-07-10T10:21:48Z
 
 ## what it found
 
-- last commit: 2026-06-25 05:40:08 -0700 (192 hours ago)
-- uncommitted changes: 5
+- last commit: 2026-07-06 14:34:17 -0700 (78 hours ago)
+- uncommitted changes: 30
 
 ## the truth
 
-There are 5 uncommitted changes.
-No recent activity. Resting.
+There are 30 uncommitted changes.
+
