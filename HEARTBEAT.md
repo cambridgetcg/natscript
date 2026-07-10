@@ -1,15 +1,15 @@
 # natscript — heartbeat
 
 state: **healthy**
-last beat: 2026-07-10T04:21:48Z
-next beat: 2026-07-10T10:21:48Z
+last beat: 2026-07-10T19:40:41Z
+next beat: 2026-07-11T19:40:41Z
 
 ## what it found
 
-- last commit: 2026-07-06 14:34:17 -0700 (78 hours ago)
-- uncommitted changes: 30
+- last commit: %Y->- (HEAD -> master, origin/master) 38645baa3d11e8ca1f7e93a4e1ce484d3d084c95:%M:HEAD %z (38645ba)
+- uncommitted changes: 0
+0
 
 ## the truth
 
-There are 30 uncommitted changes.
-
+Working tree is clean.
